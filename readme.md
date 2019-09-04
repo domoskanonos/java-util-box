@@ -24,11 +24,3 @@
         <scope>compile</scope>
     </dependency>
 >
-
-
-- FontUtil Example:
->
-
-       
-
->

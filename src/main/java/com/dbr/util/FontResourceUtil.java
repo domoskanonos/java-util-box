@@ -3,6 +3,7 @@ package com.dbr.util;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import java.awt.*;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,12 +12,12 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class FontUtil {
+public class FontResourceUtil {
 
-    private static Logger logger = Logger.getLogger(FontUtil.class.getName());
+    private static Logger logger = Logger.getLogger(FontResourceUtil.class.getName());
 
     public static void main(String[] args) {
-        Font font = FontUtil.getGoogleFontByName("Roboto");
+        Font font = FontResourceUtil.getGoogleFontByName("Roboto");
         System.out.println(font.getName());
     }
 
@@ -58,8 +59,28 @@ public class FontUtil {
         return font;
     }
 
+    public static String urlGooglePrefix = "https://fonts.google.com/download?family=";
+
+
+    public static InputStream getGoogleFontStreamByName(String name) throws IOException, FontFormatException {
+        String urlAsString = urlGooglePrefix + StringEscapeUtils.escapeHtml(name);
+        logger.info("register font from url: " + urlAsString);
+        ZipInputStream stream = new ZipInputStream(new URL(urlAsString).openStream());
+        ZipEntry entry;
+        while ((entry = stream.getNextEntry()) != null) {
+            String entryName = entry.getName();
+            if (entryName.endsWith(".ttf") || entryName.endsWith(".otf")) {
+                ByteArrayInputStream bais = new ByteArrayInputStream(stream.readAllBytes());
+                stream.closeEntry();
+                return bais;
+            }
+        }
+        return null;
+    }
+
+
     private static Font registerGoogleFontByName(String name) throws IOException, FontFormatException {
-        String urlAsString = "https://fonts.google.com/download?family=" + StringEscapeUtils.escapeHtml(name);
+        String urlAsString = urlGooglePrefix + StringEscapeUtils.escapeHtml(name);
         logger.info("register font from url: " + urlAsString);
         return registerFontFromZipFile(new URL(urlAsString));
     }
