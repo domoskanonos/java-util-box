@@ -3,10 +3,7 @@ package com.dbr.util;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -62,7 +59,7 @@ public class FontResourceUtil {
     public static String urlGooglePrefix = "https://fonts.google.com/download?family=";
 
 
-    public static InputStream getGoogleFontStreamByName(String name) throws IOException, FontFormatException {
+    public static File getGoogleFontStreamByName(String name) throws IOException, FontFormatException {
         String urlAsString = urlGooglePrefix + StringEscapeUtils.escapeHtml(name);
         logger.info("register font from url: " + urlAsString);
         ZipInputStream stream = new ZipInputStream(new URL(urlAsString).openStream());
@@ -70,9 +67,12 @@ public class FontResourceUtil {
         while ((entry = stream.getNextEntry()) != null) {
             String entryName = entry.getName();
             if (entryName.endsWith(".ttf") || entryName.endsWith(".otf")) {
-                ByteArrayInputStream bais = new ByteArrayInputStream(stream.readAllBytes());
+                File tempFile = File.createTempFile(name, null);
+                FileOutputStream fos = new FileOutputStream(tempFile);
+                fos.write(stream.readAllBytes());
+                fos.close();
                 stream.closeEntry();
-                return bais;
+                return tempFile;
             }
         }
         return null;

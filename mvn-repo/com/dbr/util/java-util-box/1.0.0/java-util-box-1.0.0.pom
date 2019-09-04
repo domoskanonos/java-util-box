@@ -20,6 +20,7 @@
         <java.version>12</java.version>
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
+        <dependency.version.openhtmltopdf>1.0.0</dependency.version.openhtmltopdf>
     </properties>
 
     <dependencies>
@@ -30,11 +31,13 @@
             <version>1.18.2</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+
     </dependencies>
 
     <build>
