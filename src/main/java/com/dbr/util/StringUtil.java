@@ -34,7 +34,7 @@ public class StringUtil {
     }
 
     public static String firstLetterToUpperCase(String value) {
-        return String.valueOf(value.charAt(0)).toUpperCase() + value.substring(1);
+        return value == null || value.length() == 0 ? null : String.valueOf(value.charAt(0)).toUpperCase() + value.substring(1);
     }
 
     public static String toUpperCase(String value) {
@@ -85,7 +85,6 @@ public class StringUtil {
     }
 
     /**
-     *
      * convert columnName to java propertieName,
      * f.e. MY_COLUMN -> myColumn
      *
@@ -95,4 +94,5 @@ public class StringUtil {
     public static String toPropertieName(String columnName) {
         return underscoreToUpperLetter(columnName.toLowerCase());
     }
+
 }
