@@ -29,16 +29,15 @@ public class ResourceUtil {
         InputStream is = null;
         try {
             is = ResourceUtil.class.getResource(path).openStream();
-        } catch (IOException e) {
-            throw new ResourceException(String.format("can't open stream, path=%s", path), e);
-        } finally {
+        } catch (IOException ioe) {
             if (is != null) {
                 try {
                     is.close();
-                } catch (IOException e) {
-                    throw new ResourceException(String.format("can't close input stream, path=%s", path), e);
+                } catch (IOException ioe2) {
+                    throw new ResourceException(String.format("can't close input stream, path=%s", path), ioe2);
                 }
             }
+            throw new ResourceException(String.format("can't open stream, path=%s", path), ioe);
         }
         return is;
     }
