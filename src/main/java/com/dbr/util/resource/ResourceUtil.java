@@ -1,8 +1,8 @@
 package com.dbr.util.resource;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.stream.Collectors;
 
 public class ResourceUtil {
 
@@ -41,5 +41,38 @@ public class ResourceUtil {
         }
         return is;
     }
+
+    public static String getResourceAsString(String path) {
+        StringBuffer retval = new StringBuffer();
+
+        InputStream is = getResourceAsStream(path);
+        InputStreamReader reader = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(reader);
+        try {
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                retval.append(line);
+                retval.append("\n");
+            }
+        } catch (IOException e) {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                    throw new ResourceException("unable to close input stream.", e);
+                }
+            }
+            throw new ResourceException("error read resource.", e);
+        }
+
+        return retval.toString();
+
+    }
+
+    public static String toString(InputStream inputStream, Charset charset) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset))) {
+            return br.lines().collect(Collectors.joining(System.lineSeparator()));
+        }
+    }
+
 
 }
