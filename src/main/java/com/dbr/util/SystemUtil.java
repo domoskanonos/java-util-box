@@ -43,7 +43,8 @@ public class SystemUtil {
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int exitCode = executeCommand("cmd.exe", "/C", "mvn -DgroupId=com.my.project -DartifactId=my-project -Dversion=1.0.0 archetype:generate -DarchetypeGroupId=com.dbr.springboot.generator.ws -DarchetypeArtifactId=spring-boot-generator-ws-archetype -DarchetypeVersion=1.0.0 -DarchetypeRepository=https://raw.githubusercontent.com/domoskanonos/spring-boot-generator-ws/master/mvn-repo");
+		//int exitCode = executeCommand("cmd.exe", "/C", "dir");
+		int exitCode = executeCommand("cmd.exe", "/C", "mvn -DgroupId=com.my.project -DartifactId=my-project -Dversion=1.0.0 archetype:generate -B -DarchetypeGroupId=com.dbr.springboot.generator.ws -DarchetypeArtifactId=spring-boot-generator-ws-archetype -DarchetypeVersion=1.0.0 -DarchetypeRepository=https://raw.githubusercontent.com/domoskanonos/spring-boot-generator-ws/master/mvn-repo");
 		System.out.println(exitCode);
 	}
 
