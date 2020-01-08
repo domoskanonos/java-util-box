@@ -21,7 +21,7 @@ public class SystemUtil {
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		int exitCode = executeCommand(null, "cmd.exe", "/C", "dir");
+		int exitCode = executeCommand("cmd.exe", "/C", "dir");
 		System.out.println(exitCode);
 	}
 
@@ -41,7 +41,11 @@ public class SystemUtil {
 	}
 
 	public static int showFolder(File folder) throws IOException, InterruptedException {
-		return executeCommand(null, "explorer.exe", folder.getAbsolutePath());
+		return executeCommand("explorer.exe", folder.getAbsolutePath());
+	}
+
+	public static int executeCommand(String... command) throws IOException, InterruptedException {
+		return executeCommand(null, command);
 	}
 
 	public static int executeCommand(File executeDirectory, String... command) throws IOException, InterruptedException {
