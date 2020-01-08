@@ -85,7 +85,7 @@ public class ZipUtil {
         return true;
     }
 
-    public void unzipFile(File zipFile, File destDir) throws IOException {
+    public static void unzipFile(File zipFile, File destDir) throws IOException {
         byte[] buffer = new byte[1024];
         ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
         ZipEntry zipEntry = zis.getNextEntry();
