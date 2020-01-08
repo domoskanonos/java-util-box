@@ -85,23 +85,34 @@ public class ZipUtil {
         return true;
     }
 
+
+    public static void main(String[] args) throws IOException {
+        ZipUtil.unzipFile(new File("C:/java_base_archiv.zip"), new File("\\gen\\my-paperbox\\my-paperbox-entities"));
+    }
+
     public static void unzipFile(File zipFile, File destDir) throws IOException {
         byte[] buffer = new byte[1024];
         ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
             File newFile = newFile(destDir, zipEntry);
-            if (zipEntry.isDirectory()) {
-                if (!newFile.exists()) {
-                    newFile.mkdir();
+            if (!newFile.getCanonicalPath().equals(destDir.getCanonicalPath())) {
+                if (zipEntry.isDirectory()) {
+                    if (!newFile.exists()) {
+                        logger.info("create directory: {} ", newFile.getAbsolutePath());
+                        newFile.mkdir();
+                    }
+                } else {
+                    logger.info("write file: {} ", newFile.getAbsolutePath());
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
                 }
             } else {
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
-                }
-                fos.close();
+                logger.warn("ignore zip entry: {} ", newFile.getAbsolutePath());
             }
             zipEntry = zis.getNextEntry();
         }
