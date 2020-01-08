@@ -109,7 +109,7 @@ public class ZipUtil {
         String destDirPath = destinationDir.getCanonicalPath();
         String destFilePath = destFile.getCanonicalPath();
 
-        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+        if (!destFilePath.startsWith(destDirPath)) {
             throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
         }
 
