@@ -91,12 +91,18 @@ public class ZipUtil {
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
             File newFile = newFile(destDir, zipEntry);
-            FileOutputStream fos = new FileOutputStream(newFile);
-            int len;
-            while ((len = zis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
+            if (zipEntry.isDirectory()) {
+                if (!newFile.exists()) {
+                    newFile.mkdir();
+                }
+            } else {
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
             }
-            fos.close();
             zipEntry = zis.getNextEntry();
         }
         zis.closeEntry();
