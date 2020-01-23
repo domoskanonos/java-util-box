@@ -37,6 +37,11 @@ public class StringUtil {
         return value == null || value.length() == 0 ? null : String.valueOf(value.charAt(0)).toUpperCase() + value.substring(1);
     }
 
+    private static String firstLetterToLowerCase(String value) {
+        return value == null || value.length() == 0 ? null : String.valueOf(value.charAt(0)).toLowerCase() + value.substring(1);
+    }
+
+
     public static String toUpperCase(String value) {
         return value.toUpperCase();
     }
@@ -95,6 +100,7 @@ public class StringUtil {
         sourceName = sourceName.replace("-", "_");
         sourceName = sourceName.toLowerCase();
         sourceName = underscoreToUpperLetter(sourceName);
+        sourceName = firstLetterToLowerCase(sourceName);
         return sourceName;
     }
 
