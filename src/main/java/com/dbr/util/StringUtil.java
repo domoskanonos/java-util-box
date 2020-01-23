@@ -85,14 +85,17 @@ public class StringUtil {
     }
 
     /**
-     * convert columnName to java propertieName,
+     * convert sourceName to java propertieName,
      * f.e. MY_COLUMN -> myColumn
      *
-     * @param columnName
+     * @param sourceName
      * @return
      */
-    public static String toPropertieName(String columnName) {
-        return underscoreToUpperLetter(columnName.toLowerCase());
+    public static String toPropertieName(String sourceName) {
+        sourceName = sourceName.replace("-", "_");
+        sourceName = sourceName.toLowerCase();
+        sourceName = underscoreToUpperLetter(sourceName);
+        return sourceName;
     }
 
 }
