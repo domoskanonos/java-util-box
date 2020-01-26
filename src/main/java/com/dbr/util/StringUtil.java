@@ -1,5 +1,7 @@
 package com.dbr.util;
 
+import java.math.BigDecimal;
+
 public class StringUtil {
 
 
@@ -103,5 +105,87 @@ public class StringUtil {
         sourceName = firstLetterToLowerCase(sourceName);
         return sourceName;
     }
+
+    public static String getType(String... values) {
+
+        boolean containsString = false;
+        boolean containsBigDecimal = false;
+        boolean containsDouble = false;
+        boolean containsFloat = false;
+        boolean containsLong = false;
+        boolean containsInteger = false;
+        boolean containsShort = false;
+        boolean containsBoolean = false;
+
+        for (String value : values) {
+            if ("1".equals(value) || "0".equals(value)) {
+                containsBoolean = true;
+                continue;
+            }
+            try {
+                Short.valueOf(value);
+                containsShort = true;
+                continue;
+            } catch (Exception e) {
+            }
+            try {
+                Integer.valueOf(value);
+                containsInteger = true;
+                continue;
+            } catch (Exception e) {
+            }
+            try {
+                Long.valueOf(value);
+                containsLong = true;
+                continue;
+            } catch (Exception e) {
+            }
+            try {
+                Float.valueOf(value);
+                containsFloat = true;
+                continue;
+            } catch (Exception e) {
+            }
+            try {
+                Double.valueOf(value);
+                containsDouble = true;
+                continue;
+            } catch (Exception e) {
+            }
+            try {
+                new BigDecimal(value);
+                containsBigDecimal = true;
+                continue;
+            } catch (Exception e) {
+            }
+            try {
+                String.valueOf(value);
+                containsString = true;
+                break;
+            } catch (Exception e) {
+            }
+        }
+
+        if (containsString)
+            return String.class.getSimpleName();
+        if (containsBigDecimal)
+            return BigDecimal.class.getSimpleName();
+        if (containsDouble)
+            return Double.class.getSimpleName();
+        if (containsFloat)
+            return Float.class.getSimpleName();
+        if (containsLong)
+            return Long.class.getSimpleName();
+        if (containsInteger)
+            return Integer.class.getSimpleName();
+        if (containsShort)
+            return Short.class.getSimpleName();
+        if (containsBoolean)
+            return Boolean.class.getSimpleName();
+
+        return Object.class.getSimpleName();
+
+    }
+
 
 }
