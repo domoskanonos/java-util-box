@@ -1,5 +1,7 @@
 package com.dbr.util;
 
+import org.apache.commons.lang.time.DateUtils;
+
 import java.math.BigDecimal;
 
 public class StringUtil {
@@ -116,6 +118,7 @@ public class StringUtil {
         boolean containsInteger = false;
         boolean containsShort = false;
         boolean containsBoolean = false;
+        boolean containsISO8601Date = false;
 
         for (String value : values) {
             if ("1".equals(value) || "0".equals(value)) {
@@ -159,6 +162,12 @@ public class StringUtil {
             } catch (Exception e) {
             }
             try {
+                DateUtil.DATE_FORMAT_ISO8601.parse(value);
+                containsISO8601Date = true;
+                continue;
+            } catch (Exception e) {
+            }
+            try {
                 String.valueOf(value);
                 containsString = true;
                 break;
@@ -167,21 +176,28 @@ public class StringUtil {
         }
 
         if (containsString)
-            return String.class.getSimpleName();
+            return DataTypes.TYPE_STRING;
+        if (containsISO8601Date) {
+            if (!containsBigDecimal && !containsDouble && !containsFloat && !containsInteger && !containsShort && !containsBoolean) {
+                return DataTypes.TYPE_DATE_ISO8601;
+            } else {
+                return DataTypes.TYPE_STRING;
+            }
+        }
         if (containsBigDecimal)
-            return BigDecimal.class.getSimpleName();
+            return DataTypes.TYPE_BIG_DECIMAL;
         if (containsDouble)
-            return Double.class.getSimpleName();
+            return DataTypes.TYPE_DOUBLE;
         if (containsFloat)
-            return Float.class.getSimpleName();
+            return DataTypes.TYPE_FLOAT;
         if (containsLong)
-            return Long.class.getSimpleName();
+            return DataTypes.TYPE_LONG;
         if (containsInteger)
-            return Integer.class.getSimpleName();
+            return DataTypes.TYPE_INTEGER;
         if (containsShort)
-            return Short.class.getSimpleName();
+            return DataTypes.TYPE_SHORT;
         if (containsBoolean)
-            return Boolean.class.getSimpleName();
+            return DataTypes.TYPE_BOOLEAN;
 
         return Object.class.getSimpleName();
 

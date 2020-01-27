@@ -9,10 +9,12 @@ public class StringUtilTest {
 
     @Test
     public void getType() {
-        Assert.assertEquals(StringUtil.getType("1", "0", "1", "1"), "Boolean");
-        Assert.assertEquals(StringUtil.getType("1", "0", "1", "2"), "Short");
-        Assert.assertEquals(StringUtil.getType("1", "0", "32768", "2"), "Integer");
-        Assert.assertEquals(StringUtil.getType("1", "0", "2147483648", "2"), "Long");
-        Assert.assertEquals(StringUtil.getType("1", "0", "B", "2"), "String");
+        Assert.assertEquals(StringUtil.getType("1", "0", "1", "1"), DataTypes.TYPE_BOOLEAN);
+        Assert.assertEquals(StringUtil.getType("1", "0", "1", "2"), DataTypes.TYPE_SHORT);
+        Assert.assertEquals(StringUtil.getType("1", "0", "32768", "2"), DataTypes.TYPE_INTEGER);
+        Assert.assertEquals(StringUtil.getType("1", "0", "2147483648", "2"), DataTypes.TYPE_LONG);
+        Assert.assertEquals(StringUtil.getType("1", "0", "B", "2"), DataTypes.TYPE_STRING);
+        Assert.assertEquals(StringUtil.getType("1", "0", "2001-07-04T12:08:56.235-0700", "2"), DataTypes.TYPE_STRING);
+        Assert.assertEquals(StringUtil.getType("2001-07-04T12:08:56.235-0700", "2001-07-04T12:08:56.235-0700", "2001-07-04T12:08:56.235-0700", "2001-07-04T12:08:56.235-0700"), DataTypes.TYPE_DATE_ISO8601);
     }
 }
