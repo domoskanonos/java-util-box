@@ -35,13 +35,13 @@ public abstract class AbstractCSVImporter<T> {
             if (index == 1 && withHeaderRow) {
                 continue;
             }
+            retval.add(mapObject(line));
             if (maxLineSize != null && maxLineSize.intValue() < index) {
                 break;
             }
             if (index % 100 == 0) {
                 log.info(String.format("read 100 rows, total rows: %d", index));
             }
-            retval.add(mapObject(line));
         }
         scanner.close();
         return retval;
