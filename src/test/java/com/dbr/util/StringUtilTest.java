@@ -16,5 +16,6 @@ public class StringUtilTest {
         Assert.assertEquals(StringUtil.getType("1", "0", "B", "2"), DataTypes.TYPE_STRING);
         Assert.assertEquals(StringUtil.getType("1", "0", "2001-07-04T12:08:56.235-0700", "2"), DataTypes.TYPE_STRING);
         Assert.assertEquals(StringUtil.getType("2001-07-04T12:08:56.235-0700", "2001-07-04T12:08:56.235-0700", "2001-07-04T12:08:56.235-0700", "2001-07-04T12:08:56.235-0700"), DataTypes.TYPE_DATE_ISO8601);
+        Assert.assertEquals(StringUtil.getType("2019-06-25T11:55:18Z", "2019-06-25T11:55:18Z", "2019-06-25T11:55:18Z", "2019-06-25T11:55:18Z"), DataTypes.TYPE_DATE_ISO8601);
     }
 }
