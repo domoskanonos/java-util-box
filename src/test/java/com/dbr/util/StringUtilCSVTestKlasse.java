@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 
-public class StringUtilTest {
+public class StringUtilCSVTestKlasse {
 
     @Test
     public void getType() {

@@ -1,9 +1,15 @@
 package com.dbr.abstr;
 
+import com.dbr.util.ReflectionUtil;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 
+import java.beans.IntrospectionException;
 import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -13,12 +19,50 @@ public abstract class AbstractCSVImporter<T> {
 
     private Logger log = Logger.getLogger(this.getClass().getName());
 
-    private String rowSplitter;
-    private String columnSplitter;
+    protected String rowSplitter;
+    protected String columnSplitter;
+    protected String encoding = "UTF-8";
 
     protected AbstractCSVImporter(String rowSplitter, String columnSplitter) {
         this.rowSplitter = rowSplitter;
         this.columnSplitter = columnSplitter;
+    }
+
+    public void toFile(File file, T item, boolean append) throws IllegalAccessException, IOException, IntrospectionException, InvocationTargetException {
+        StringBuffer sb = new StringBuffer();
+        int columnCount = 0;
+        Class<?> itemClazz = item.getClass();
+        for (Field field : itemClazz.getDeclaredFields()) {
+            if (columnCount > 0) {
+                sb.append(this.columnSplitter);
+            }
+            sb.append(ReflectionUtil.invokeGetter(field.getType(), item, field));
+            columnCount++;
+        }
+        sb.append(rowSplitter);
+        FileUtils.writeStringToFile(file, sb.toString(), encoding, append);
+    }
+
+    public void toFile(File file, List<T> items, boolean append, boolean withHeaderRow) throws IOException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+        if (!append) {
+            FileUtils.writeStringToFile(file, "", encoding, append);
+            if (withHeaderRow && items.size() > 0) {
+                StringBuffer sb = new StringBuffer();
+                int columnCount = 0;
+                for (Field field : items.get(0).getClass().getDeclaredFields()) {
+                    if (columnCount > 0) {
+                        sb.append(this.columnSplitter);
+                    }
+                    sb.append(field.getName());
+                    columnCount++;
+                }
+                sb.append(rowSplitter);
+                FileUtils.writeStringToFile(file, sb.toString(), encoding, true);
+            }
+        }
+        for (T item : items) {
+            toFile(file, item, true);
+        }
     }
 
     public List<T> getObjects(File file, Boolean withHeaderRow) throws Exception {
