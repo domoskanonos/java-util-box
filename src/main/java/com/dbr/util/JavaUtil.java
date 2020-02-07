@@ -7,10 +7,13 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class ReflectionUtil {
+public class JavaUtil {
 
-    public static <T, S> S invokeGetter(Class<S> returnClazz, T object, Field field) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+    public static <T, S> S invokeGetter(T object, Field field) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
         BeanInfo info = Introspector.getBeanInfo(object.getClass(), Object.class);
         PropertyDescriptor[] props = info.getPropertyDescriptors();
         S retval = null;

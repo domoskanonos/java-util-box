@@ -203,5 +203,27 @@ public class StringUtil {
 
     }
 
+    public static <T> String toString(T value) {
+        if (value == null) {
+            return "";
+        }
+        Class<?> clazz = value.getClass();
+        switch (clazz.getSimpleName()) {
+            case DataTypes.TYPE_DATE:
+                return DateUtil.DATE_FORMAT_ISO8601.format(value);
+            case DataTypes.TYPE_STRING:
+            case DataTypes.TYPE_CHAR:
+            case DataTypes.TYPE_BOOLEAN:
+            case DataTypes.TYPE_SHORT:
+            case DataTypes.TYPE_INTEGER:
+            case DataTypes.TYPE_LONG:
+            case DataTypes.TYPE_FLOAT:
+            case DataTypes.TYPE_DOUBLE:
+            case DataTypes.TYPE_BIG_DECIMAL:
+            case DataTypes.JAVA_TYPE_BYTE_ARRAY:
+            default:
+                return String.valueOf(value);
+        }
+    }
 
 }

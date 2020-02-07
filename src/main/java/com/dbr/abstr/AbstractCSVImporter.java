@@ -1,6 +1,7 @@
 package com.dbr.abstr;
 
-import com.dbr.util.ReflectionUtil;
+import com.dbr.util.JavaUtil;
+import com.dbr.util.StringUtil;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
@@ -36,7 +37,7 @@ public abstract class AbstractCSVImporter<T> {
             if (columnCount > 0) {
                 sb.append(this.columnSplitter);
             }
-            sb.append(ReflectionUtil.invokeGetter(field.getType(), item, field));
+            sb.append(StringUtil.toString(JavaUtil.invokeGetter(item, field)));
             columnCount++;
         }
         sb.append(rowSplitter);
