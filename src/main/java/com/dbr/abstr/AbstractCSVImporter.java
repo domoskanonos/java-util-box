@@ -44,7 +44,7 @@ public abstract class AbstractCSVImporter<T> {
         FileUtils.writeStringToFile(file, sb.toString(), encoding, append);
     }
 
-    public void toFile(File file, List<T> items, boolean append, boolean withHeaderRow) throws IOException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    public void toFile(File file, List<T> items, boolean append, boolean withHeaderRow) throws IOException, IllegalAccessException, InvocationTargetException, IntrospectionException {
         if (!append) {
             FileUtils.writeStringToFile(file, "", encoding, append);
             if (withHeaderRow && items.size() > 0) {

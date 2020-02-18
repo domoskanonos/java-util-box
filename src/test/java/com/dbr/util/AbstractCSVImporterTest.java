@@ -25,7 +25,7 @@ public class AbstractCSVImporterTest {
 
     @Test
     public void export() throws IOException, IllegalAccessException, IntrospectionException, InvocationTargetException {
-        File file = new File("P:/test.csv");
+        File file = new File(System.getProperty("user.home") + "/test.csv");
         AbstractCSVImporter<CSVTestKlasse> abstractCSVImporter = new AbstractCSVImporter<CSVTestKlasse>("\n", ";") {
             @Override
             protected CSVTestKlasse mapObject(List<String> columns) throws Exception {

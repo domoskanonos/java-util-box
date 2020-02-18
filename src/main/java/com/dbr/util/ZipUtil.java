@@ -2,24 +2,25 @@ package com.dbr.util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
 
-    protected static final Logger logger = LogManager.getLogger(ZipUtil.class);
+    private static Logger logger = Logger.getLogger(ZipUtil.class.getName());
 
     private static void addFileEntry(ZipOutputStream zos, File dir, File file) throws IOException {
-        logger.info("addFileEntry: {} ", file.getAbsolutePath());
+        logger.info(String.format("addFileEntry: {} %s", file.getAbsolutePath()));
 
         ZipEntry ze = new ZipEntry(dir.getName() + File.separator + file.getAbsolutePath()
                 .substring(dir.getAbsolutePath().length() + 1));
@@ -64,7 +65,7 @@ public class ZipUtil {
             zos = new ZipOutputStream(fos);
             addDirectory(zos, folderToZip);
         } catch (IOException e) {
-            logger.error("error create zip file:", e);
+            logger.severe(String.format("error create zip file:%s", e));
             throw new RuntimeException(e);
         } finally {
             if (zos != null) {
@@ -99,11 +100,11 @@ public class ZipUtil {
             if (!newFile.getCanonicalPath().equals(destDir.getCanonicalPath())) {
                 if (zipEntry.isDirectory()) {
                     if (!newFile.exists()) {
-                        logger.info("create directory: {} ", newFile.getAbsolutePath());
+                        logger.info(String.format("create directory: {} %s", newFile.getAbsolutePath()));
                         newFile.mkdir();
                     }
                 } else {
-                    logger.info("write file: {} ", newFile.getAbsolutePath());
+                    logger.info(String.format("write file: {} %s", newFile.getAbsolutePath()));
                     FileOutputStream fos = new FileOutputStream(newFile);
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
@@ -112,7 +113,7 @@ public class ZipUtil {
                     fos.close();
                 }
             } else {
-                logger.warn("ignore zip entry: {} ", newFile.getAbsolutePath());
+                logger.warning(String.format("ignore zip entry: {} %s", newFile.getAbsolutePath()));
             }
             zipEntry = zis.getNextEntry();
         }

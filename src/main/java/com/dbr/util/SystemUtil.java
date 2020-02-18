@@ -1,11 +1,9 @@
 package com.dbr.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.awt.*;
 import java.io.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * check for furher cmd command informations:
@@ -13,7 +11,7 @@ import java.util.function.Consumer;
  */
 public class SystemUtil {
 
-	protected static final Logger logger = LogManager.getLogger(SystemUtil.class.getSimpleName());
+	private static Logger logger = java.util.logging.Logger.getLogger(SystemUtil.class.getName());
 
 	/**
 	 * @param args
@@ -31,10 +29,10 @@ public class SystemUtil {
 	public static void openFile(File file) {
 		if (Desktop.isDesktopSupported()) {
 			try {
-				logger.info("open file: {}", file.getAbsolutePath());
+				logger.info(String.format("open file: {}%s", file.getAbsolutePath()));
 				Desktop.getDesktop().open(file);
 			} catch (Throwable th) {
-				logger.error("error open file, file: " + file.getAbsolutePath(), th);
+				logger.severe(String.format("error open file, file: %s%s", file.getAbsolutePath(), th));
 				throw new RuntimeException(th);
 			}
 		}
