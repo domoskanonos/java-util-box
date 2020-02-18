@@ -1,6 +1,7 @@
 package com.dbr.util;
 
-import org.apache.commons.lang.StringEscapeUtils;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.awt.*;
 import java.io.*;
@@ -60,7 +61,7 @@ public class FontResourceUtil {
 
 
     public static File getGoogleFontStreamByName(String name) throws IOException, FontFormatException {
-        String urlAsString = urlGooglePrefix + StringEscapeUtils.escapeHtml(name);
+        String urlAsString = urlGooglePrefix + StringEscapeUtils.escapeHtml4(name);
         logger.info("register font from url: " + urlAsString);
         ZipInputStream stream = new ZipInputStream(new URL(urlAsString).openStream());
         ZipEntry entry;
@@ -80,7 +81,7 @@ public class FontResourceUtil {
 
 
     private static Font registerGoogleFontByName(String name) throws IOException, FontFormatException {
-        String urlAsString = urlGooglePrefix + StringEscapeUtils.escapeHtml(name);
+        String urlAsString = urlGooglePrefix + StringEscapeUtils.escapeHtml4(name);
         logger.info("register font from url: " + urlAsString);
         return registerFontFromZipFile(new URL(urlAsString));
     }
