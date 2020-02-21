@@ -1,7 +1,6 @@
 package com.dbr.util;
 
 import com.dbr.abstr.AbstractCSVImporter;
-import lombok.Data;
 import org.junit.Test;
 
 import java.beans.IntrospectionException;
@@ -14,13 +13,52 @@ import java.util.List;
 
 public class AbstractCSVImporterTest {
 
-    @Data
     public class CSVTestKlasse {
         private String name;
         private String surname;
         private Date birthday;
         private Integer count;
         private Boolean isActive;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getSurname() {
+            return surname;
+        }
+
+        public void setSurname(String surname) {
+            this.surname = surname;
+        }
+
+        public Date getBirthday() {
+            return birthday;
+        }
+
+        public void setBirthday(Date birthday) {
+            this.birthday = birthday;
+        }
+
+        public Integer getCount() {
+            return count;
+        }
+
+        public void setCount(Integer count) {
+            this.count = count;
+        }
+
+        public Boolean getActive() {
+            return isActive;
+        }
+
+        public void setActive(Boolean active) {
+            isActive = active;
+        }
     }
 
     @Test
@@ -50,7 +88,7 @@ public class AbstractCSVImporterTest {
         CSVTestKlasse.setName("Name");
         CSVTestKlasse.setSurname("Nachname");
         CSVTestKlasse.setCount(10);
-        CSVTestKlasse.setIsActive(true);
+        CSVTestKlasse.setActive(true);
         return CSVTestKlasse;
     }
 }
