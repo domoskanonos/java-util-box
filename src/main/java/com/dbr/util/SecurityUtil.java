@@ -35,6 +35,11 @@ public class SecurityUtil {
     }
 
     public static String encrypt(String decrypted) {
+
+        if (secretKey == null) {
+            throw new SecurityUtilException("secretKey is null. please set secret.");
+        }
+
         logger.log(Level.INFO, "encrypt data: {0}", decrypted);
         Cipher cipher;
         try {
@@ -55,6 +60,11 @@ public class SecurityUtil {
     }
 
     public static String decrypt(String encrypted) {
+
+        if (secretKey == null) {
+            throw new SecurityUtilException("secretKey is null. please set secret.");
+        }
+
         logger.log(Level.INFO, "decrypt data: {0}", encrypted);
         Cipher cipher = null;
         try {
@@ -76,9 +86,15 @@ public class SecurityUtil {
 
 
     public static class SecurityUtilException extends RuntimeException {
+
+        public SecurityUtilException(String message) {
+            super(message);
+        }
+
         public SecurityUtilException(Throwable th) {
             super(th);
         }
+
     }
 
 }
