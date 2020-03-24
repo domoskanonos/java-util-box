@@ -49,14 +49,14 @@ public class SecurityUtil {
         LOGGER.log(Level.INFO, decrypt);
     }
 
-    private String decrypt(String s) {
+    public String decrypt(String s) {
         if (this.secret == null) {
             throw new SecurityUtilException("secret is empty, please set a default secret");
         }
         return decrypt(s, this.secret);
     }
 
-    private String encrypt(String hallo) {
+    public String encrypt(String hallo) {
         if (this.secret == null) {
             throw new SecurityUtilException("secret is empty, please set a default secret");
         }
@@ -64,7 +64,7 @@ public class SecurityUtil {
     }
 
 
-    public String encrypt(String plaintext, String password) {
+    private String encrypt(String plaintext, String password) {
         // Generate a 128-bit salt using a CSPRNG.
         SecureRandom rand = new SecureRandom();
         byte[] salt = new byte[PBKDF2_SALT_SIZE];
@@ -95,7 +95,7 @@ public class SecurityUtil {
         return Base64.getEncoder().encodeToString(ciphertextAndNonceAndSalt);
     }
 
-    public String decrypt(String base64CiphertextAndNonceAndSalt, String password) {
+    private String decrypt(String base64CiphertextAndNonceAndSalt, String password) {
         // Decode the base64.
         byte[] ciphertextAndNonceAndSalt = Base64.getDecoder().decode(base64CiphertextAndNonceAndSalt);
 
