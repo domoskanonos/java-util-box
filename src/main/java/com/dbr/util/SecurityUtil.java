@@ -1,89 +1,189 @@
 package com.dbr.util;
 
 import javax.crypto.*;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.util.Arrays;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SecurityUtil {
 
-    private static Logger logger = Logger.getLogger(SecurityUtil.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(SecurityUtil.class.getSimpleName());
+    private static final String ALGORITHMNAME = "AES/GCM/NoPadding";
+    private static final int ALGORITHM_NONCE_SIZE = 12;
+    private static final int ALGORITHM_TAG_SIZE = 128;
+    private static final int ALGORITHM_KEY_SIZE = 128;
+    private static final String PBKDF2_NAME = "PBKDF2WithHmacSHA256";
+    private static final int PBKDF2_SALT_SIZE = 16;
+    private static final int PBKDF2_ITERATIONS = 32767;
 
-    private static SecretKeySpec secretKey;
+    private static SecurityUtil uniqueInstance = null;
 
-    private static String transformation = "AES/ECB/PKCS5Padding";
+    static synchronized SecurityUtil getUniqueInstance() {
+        if (uniqueInstance == null) {
+            uniqueInstance = new SecurityUtil();
+        }
+        return uniqueInstance;
+    }
 
     private SecurityUtil() {
     }
 
-    public static void setKey(String myKey) {
-        MessageDigest sha = null;
-        byte[] key = myKey.getBytes(StandardCharsets.UTF_8);
+
+    private String secret;
+
+    public void setSystemSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public static void main(String[] args) {
+        SecurityUtil.getUniqueInstance().setSystemSecret("FGK$FI$%&F%$$$DD");
+        String encrypt = SecurityUtil.getUniqueInstance().encrypt("MeinPassword");
+        LOGGER.log(Level.INFO, encrypt);
+        String decrypt = SecurityUtil.getUniqueInstance().decrypt(encrypt);
+        LOGGER.log(Level.INFO, decrypt);
+    }
+
+    private String decrypt(String s) {
+        if (this.secret == null) {
+            throw new SecurityUtilException("secret is empty, please set a default secret");
+        }
+        return decrypt(s, this.secret);
+    }
+
+    private String encrypt(String hallo) {
+        if (this.secret == null) {
+            throw new SecurityUtilException("secret is empty, please set a default secret");
+        }
+        return encrypt(hallo, this.secret);
+    }
+
+
+    public String encrypt(String plaintext, String password) {
+        // Generate a 128-bit salt using a CSPRNG.
+        SecureRandom rand = new SecureRandom();
+        byte[] salt = new byte[PBKDF2_SALT_SIZE];
+        rand.nextBytes(salt);
+
+        // Create an instance of PBKDF2 and derive a key.
+        PBEKeySpec pwSpec = new PBEKeySpec(password.toCharArray(), salt, PBKDF2_ITERATIONS, ALGORITHM_KEY_SIZE);
+        SecretKeyFactory keyFactory = null;
         try {
-            sha = MessageDigest.getInstance("SHA-1");
+            keyFactory = SecretKeyFactory.getInstance(PBKDF2_NAME);
         } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException(e);
+            throw new SecurityUtilException(e);
         }
-        key = sha.digest(key);
-        key = Arrays.copyOf(key, 16);
-        secretKey = new SecretKeySpec(key, "AES");
+        byte[] key = new byte[0];
+        try {
+            key = keyFactory.generateSecret(pwSpec).getEncoded();
+        } catch (InvalidKeySpecException e) {
+            throw new SecurityUtilException(e);
+        }
+
+        // Encrypt and prepend salt.
+        byte[] ciphertextAndNonce = encryptBytes(plaintext.getBytes(StandardCharsets.UTF_8), key);
+        byte[] ciphertextAndNonceAndSalt = new byte[salt.length + ciphertextAndNonce.length];
+        System.arraycopy(salt, 0, ciphertextAndNonceAndSalt, 0, salt.length);
+        System.arraycopy(ciphertextAndNonce, 0, ciphertextAndNonceAndSalt, salt.length, ciphertextAndNonce.length);
+
+        // Return as base64 string.
+        return Base64.getEncoder().encodeToString(ciphertextAndNonceAndSalt);
     }
 
-    public static String encrypt(String decrypted) {
+    public String decrypt(String base64CiphertextAndNonceAndSalt, String password) {
+        // Decode the base64.
+        byte[] ciphertextAndNonceAndSalt = Base64.getDecoder().decode(base64CiphertextAndNonceAndSalt);
 
-        if (secretKey == null) {
-            throw new SecurityUtilException("secretKey is null. please set secret.");
+        // Retrieve the salt and ciphertextAndNonce.
+        byte[] salt = new byte[PBKDF2_SALT_SIZE];
+        byte[] ciphertextAndNonce = new byte[ciphertextAndNonceAndSalt.length - PBKDF2_SALT_SIZE];
+        System.arraycopy(ciphertextAndNonceAndSalt, 0, salt, 0, salt.length);
+        System.arraycopy(ciphertextAndNonceAndSalt, salt.length, ciphertextAndNonce, 0, ciphertextAndNonce.length);
+
+        // Create an instance of PBKDF2 and derive the key.
+        PBEKeySpec pwSpec = new PBEKeySpec(password.toCharArray(), salt, PBKDF2_ITERATIONS, ALGORITHM_KEY_SIZE);
+        SecretKeyFactory keyFactory = null;
+        try {
+            keyFactory = SecretKeyFactory.getInstance(PBKDF2_NAME);
+        } catch (NoSuchAlgorithmException e) {
+            throw new SecurityUtilException(e);
+        }
+        byte[] key = new byte[0];
+        try {
+            key = keyFactory.generateSecret(pwSpec).getEncoded();
+        } catch (InvalidKeySpecException e) {
+            throw new SecurityUtilException(e);
         }
 
-        logger.log(Level.INFO, "encrypt data: {0}", decrypted);
-        Cipher cipher;
-        try {
-            cipher = Cipher.getInstance(transformation);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            throw new SecurityException(e);
-        }
-        try {
-            Objects.requireNonNull(cipher).init(Cipher.ENCRYPT_MODE, secretKey);
-        } catch (InvalidKeyException e) {
-            throw new SecurityException(e);
-        }
-        try {
-            return Base64.getEncoder().encodeToString(cipher.doFinal(decrypted.getBytes(StandardCharsets.UTF_8)));
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            throw new SecurityException(e);
-        }
+        // Decrypt and return result.
+        return new String(decryptBytes(ciphertextAndNonce, key), StandardCharsets.UTF_8);
     }
 
-    public static String decrypt(String encrypted) {
+    private byte[] encryptBytes(byte[] plaintext, byte[] key) {
+        // Generate a 96-bit nonce using a CSPRNG.
+        SecureRandom rand = new SecureRandom();
+        byte[] nonce = new byte[ALGORITHM_NONCE_SIZE];
+        rand.nextBytes(nonce);
 
-        if (secretKey == null) {
-            throw new SecurityUtilException("secretKey is null. please set secret.");
-        }
-
-        logger.log(Level.INFO, "decrypt data: {0}", encrypted);
+        // Create the cipher instance and initialize.
         Cipher cipher = null;
         try {
-            cipher = Cipher.getInstance(transformation);
+            cipher = Cipher.getInstance(ALGORITHMNAME);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new SecurityUtilException(e);
         }
         try {
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        } catch (InvalidKeyException e) {
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, "AES"), new GCMParameterSpec(ALGORITHM_TAG_SIZE, nonce));
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+            throw new SecurityUtilException(e);
+        }
+
+        // Encrypt and prepend nonce.
+        byte[] ciphertext = new byte[0];
+        try {
+            ciphertext = cipher.doFinal(plaintext);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            throw new SecurityUtilException(e);
+        }
+        byte[] ciphertextAndNonce = new byte[nonce.length + ciphertext.length];
+        System.arraycopy(nonce, 0, ciphertextAndNonce, 0, nonce.length);
+        System.arraycopy(ciphertext, 0, ciphertextAndNonce, nonce.length, ciphertext.length);
+
+        return ciphertextAndNonce;
+    }
+
+    private byte[] decryptBytes(byte[] ciphertextAndNonce, byte[] key) {
+        // Retrieve the nonce and ciphertext.
+        byte[] nonce = new byte[ALGORITHM_NONCE_SIZE];
+        byte[] ciphertext = new byte[ciphertextAndNonce.length - ALGORITHM_NONCE_SIZE];
+        System.arraycopy(ciphertextAndNonce, 0, nonce, 0, nonce.length);
+        System.arraycopy(ciphertextAndNonce, nonce.length, ciphertext, 0, ciphertext.length);
+
+        // Create the cipher instance and initialize.
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance(ALGORITHMNAME);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new SecurityUtilException(e);
         }
         try {
-            return new String(cipher.doFinal(Base64.getDecoder().decode(encrypted)));
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), new GCMParameterSpec(ALGORITHM_TAG_SIZE, nonce));
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+            throw new SecurityUtilException(e);
+        }
+
+        // Decrypt and return result.
+        try {
+            return cipher.doFinal(ciphertext);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             throw new SecurityUtilException(e);
         }
     }
-
 
     public static class SecurityUtilException extends RuntimeException {
 
