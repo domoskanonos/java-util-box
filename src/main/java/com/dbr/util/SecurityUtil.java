@@ -24,7 +24,7 @@ public class SecurityUtil {
 
     private static SecurityUtil uniqueInstance = null;
 
-    static synchronized SecurityUtil getUniqueInstance() {
+    public static synchronized SecurityUtil getUniqueInstance() {
         if (uniqueInstance == null) {
             uniqueInstance = new SecurityUtil();
         }
