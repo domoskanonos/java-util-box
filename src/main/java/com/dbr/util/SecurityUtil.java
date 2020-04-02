@@ -43,8 +43,7 @@ public class SecurityUtil {
     }
 
     public static void main(String[] args) {
-        SecurityUtil.getUniqueInstance().setSystemSecret("FGK$FI$%&F%$$$DD");
-        String encrypt = SecurityUtil.getUniqueInstance().encrypt("MeinPassword");
+        String encrypt = SecurityUtil.getUniqueInstance().encrypt("secret");
         LOGGER.log(Level.INFO, encrypt);
         String decrypt = SecurityUtil.getUniqueInstance().decrypt(encrypt);
         LOGGER.log(Level.INFO, decrypt);
