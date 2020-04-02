@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 public class SecurityUtil {
 
     private static final Logger LOGGER = Logger.getLogger(SecurityUtil.class.getSimpleName());
+    private static final String DEFAULT_SECRET = "FGKFFIFFFFSSDWDD";
     private static final String ALGORITHMNAME = "AES/GCM/NoPadding";
     private static final int ALGORITHM_NONCE_SIZE = 12;
     private static final int ALGORITHM_TAG_SIZE = 128;
@@ -35,7 +36,7 @@ public class SecurityUtil {
     }
 
 
-    private String secret;
+    private String secret = DEFAULT_SECRET;
 
     public void setSystemSecret(String secret) {
         this.secret = secret;
@@ -50,15 +51,15 @@ public class SecurityUtil {
     }
 
     public String decrypt(String s) {
-        if (this.secret == null) {
-            throw new SecurityUtilException("secret is empty, please set a default secret");
+        if (DEFAULT_SECRET.equals(this.secret)) {
+            LOGGER.warning("secret is the default secret, please set a individual secret to avoid security risk!");
         }
         return decrypt(s, this.secret);
     }
 
     public String encrypt(String hallo) {
-        if (this.secret == null) {
-            throw new SecurityUtilException("secret is empty, please set a default secret");
+        if (DEFAULT_SECRET.equals(this.secret)) {
+            LOGGER.warning("secret is the default secret, please set a individual secret to avoid security risk!");
         }
         return encrypt(hallo, this.secret);
     }
