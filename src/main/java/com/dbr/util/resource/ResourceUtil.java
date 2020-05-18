@@ -5,9 +5,16 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ResourceUtil {
+
+    private static Logger _log = Logger.getLogger(ResourceUtil.class.getName());
 
     public static String getPackageNameAsPath(Class<?> clazz) {
         return getPackageNameAsPath(clazz.getPackage().getName());
@@ -26,6 +33,16 @@ public class ResourceUtil {
 
     public static File getResource(String path) {
         return new File(ResourceUtil.class.getResource(path).getFile());
+    }
+
+    public static String loadResourceAsString(Path path, Charset charset) throws IOException {
+        _log.log(Level.FINER, "load resource as string, path: {0}", path);
+        String content;
+        try (Stream<String> lines = Files.lines(path, charset)) {
+            content = lines.collect(Collectors.joining("\n"));
+        }
+        _log.log(Level.FINEST, "content: {0}", content);
+        return content;
     }
 
     public static InputStream getResourceAsStream(String path) {
