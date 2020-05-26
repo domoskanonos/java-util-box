@@ -1,12 +1,12 @@
 package com.dbr.util.resource;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -110,7 +110,7 @@ public class ResourceUtil {
         }
         retVal += fileEnding + ";base64,";
         try {
-            retVal += Base64.encodeBase64String(FileUtils.readFileToByteArray(file));
+            retVal += Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(file));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -120,7 +120,7 @@ public class ResourceUtil {
     public static byte[] dataUriToByteArray(String dataUri) {
         if (dataUri.contains("base64")) {
             String base64 = dataUri.substring(dataUri.indexOf("base64") + 7, dataUri.length());
-            return Base64.decodeBase64(base64);
+            return Base64.getDecoder().decode(base64);
         } else {
             String data = dataUri.substring(dataUri.indexOf(",") + 1, dataUri.length());
             return data.getBytes();
